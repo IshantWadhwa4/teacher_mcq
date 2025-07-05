@@ -427,6 +427,25 @@ def main():
             help="This will be used in the test ID and stored in the test file"
         )
         
+        # Exam Duration
+        duration_options = {
+            "30 minutes": 30,
+            "45 minutes": 45,
+            "1 hour": 60,
+            "1.5 hours": 90,
+            "2 hours": 120,
+            "2.5 hours": 150,
+            "3 hours": 180
+        }
+        
+        selected_duration_text = st.sidebar.selectbox(
+            "Exam Duration*:",
+            options=list(duration_options.keys()),
+            index=2,  # Default to 1 hour
+            help="Select the time duration for the exam"
+        )
+        exam_duration_minutes = duration_options[selected_duration_text]
+        
         # API Configuration
         st.sidebar.header("🔑 API Configuration")
         
@@ -470,6 +489,7 @@ def main():
             st.session_state.num_questions = num_questions
             st.session_state.difficulty_level = difficulty_level
             st.session_state.teacher_token = teacher_token
+            st.session_state.exam_duration_minutes = exam_duration_minutes
             
             # Show loading spinner
             with st.spinner("Generating questions... This may take a few moments."):
@@ -553,13 +573,26 @@ def main():
         st.markdown("---")
         st.header("🚀 Publish Test")
         
-        col1, col2, col3 = st.columns(3)
+        col1, col2, col3, col4 = st.columns(4)
         with col1:
             st.metric("Total Questions", len(st.session_state.mcq_questions))
         with col2:
             st.metric("Subject", st.session_state.selected_subject)
         with col3:
             st.metric("Difficulty", st.session_state.difficulty_level)
+        with col4:
+            # Format duration display
+            duration_minutes = st.session_state.exam_duration_minutes
+            if duration_minutes >= 60:
+                hours = duration_minutes // 60
+                mins = duration_minutes % 60
+                if mins > 0:
+                    duration_text = f"{hours}h {mins}m"
+                else:
+                    duration_text = f"{hours}h"
+            else:
+                duration_text = f"{duration_minutes}m"
+            st.metric("Duration", duration_text)
         
         if st.button("📤 Publish Test", type="primary"):
             if len(st.session_state.mcq_questions) == 0:
@@ -580,6 +613,7 @@ def main():
                 "additional_info": st.session_state.additional_info,
                 "difficulty": st.session_state.difficulty_level,
                 "total_questions": len(st.session_state.mcq_questions),
+                "exam_duration_minutes": st.session_state.exam_duration_minutes,
                 "questions": st.session_state.mcq_questions
             }
             
@@ -614,6 +648,18 @@ def main():
         with col2:
             st.info(f"**Total Questions:** {len(st.session_state.mcq_questions)}")
             st.info(f"**Difficulty:** {st.session_state.difficulty_level}")
+            # Format and display duration
+            duration_minutes = st.session_state.exam_duration_minutes
+            if duration_minutes >= 60:
+                hours = duration_minutes // 60
+                mins = duration_minutes % 60
+                if mins > 0:
+                    duration_text = f"{hours}h {mins}m"
+                else:
+                    duration_text = f"{hours}h"
+            else:
+                duration_text = f"{duration_minutes}m"
+            st.info(f"**Duration:** {duration_text}")
             st.info(f"**Created:** {datetime.now().strftime('%Y-%m-%d %H:%M')}")
         
         # Reset button
