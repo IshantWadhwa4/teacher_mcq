@@ -369,15 +369,8 @@ def main():
     
     # Step 1: Initial Configuration
     if not st.session_state.questions_generated:
-        st.header("📝 Test Configuration")
-        
-        # Teacher Information
-        st.subheader("👨‍🏫 Teacher Information")
-        teacher_name = st.text_input(
-            "Teacher Name*:",
-            placeholder="Enter your full name",
-            help="This will be used in the test ID and stored in the test file"
-        )
+        st.header("🤖 AI Question Generation")
+        st.markdown("Configure your test settings in the sidebar, then generate questions using AI.")
         
         # Sidebar for test inputs
         st.sidebar.header("📝 Test Configuration")
@@ -426,6 +419,14 @@ def main():
             help="Choose the difficulty level for the test"
         )
         
+        # Teacher Information
+        st.sidebar.header("👨‍🏫 Teacher Information")
+        teacher_name = st.sidebar.text_input(
+            "Teacher Name*:",
+            placeholder="Enter your full name",
+            help="This will be used in the test ID and stored in the test file"
+        )
+        
         # API Configuration
         st.sidebar.header("🔑 API Configuration")
         
@@ -442,11 +443,6 @@ def main():
             type="password",
             help="Enter your GitHub Personal Access Token"
         )
-        
-        # GitHub Configuration (Display only)
-        st.sidebar.markdown("### 📂 GitHub Configuration")
-        st.sidebar.info(f"Repository: {GITHUB_REPO}")
-        st.sidebar.info(f"Path: {GITHUB_PATH}")
         
         # Generate Questions Button
         if st.sidebar.button("🤖 Generate Questions", type="primary"):
